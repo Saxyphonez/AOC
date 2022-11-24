@@ -7,7 +7,7 @@ except:
 
 
 def get_input():
-    input_filepath = os.getcwd() + "\\AOC\\2021\\Day1\\"+ "input.txt"
+    input_filepath = os.getcwd() + "\\2021\\Day1\\"+ "input.txt"
 
     with open(input_filepath,'r') as f:
         measurements = f.readlines()
@@ -21,8 +21,8 @@ def get_input():
 
 def main():
     increase_count = 0
-    #measurements = get_input()
-    measurements = [199,200,208,210,200,207,240,269,260,263]
+    measurements = get_input()
+    #measurements = [199,200,208,210,200,207,240,269,260,263]
     previous_avg = 0
 
     for i in range(len(measurements)):
@@ -39,15 +39,14 @@ def main():
                 #print(previous_avg)
 
                 if current_avg > previous_avg:
+                    print(str(current_avg) + " " + str(previous_avg))
                     increase_count += 1
                     previous_avg = current_avg
                     continue
 
                 else:
-                    if current_avg > previous_avg:
-                        increase_count += 1
-                        previous_avg = current_avg
-                        continue
+                    previous_avg = current_avg
+                    continue
 
             else:
                 print(i)

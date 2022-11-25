@@ -100,20 +100,26 @@ def find_rating(binary_array, oxy, carbo):
         #gamma oxy, epsilon carbo
         gamma, epsilon = find_occurence(buffer, True, False) #(buf, oxy, carbo)
         buffer = matching_values(buffer, posn, gamma[posn])
-        
+        posn += 1
 
-    return buffer
+    rating = buffer[0]
+    return rating
 
 def matching_values(arr, pos, match_val):
-    #buffer = np.empty((1,arr.shape[1]))
+    locations = []
 
     for i in range(len(arr)):
         value_int = int(arr[i][pos])
 
         if value_int == match_val:
-            buffer = np.concatenate(buffer,arr[i])
-    
-    return buffer
+            locations.append(i)
+
+    matching_vals = np.empty((len(locations), arr.shape[1]))
+
+    for i, values in enumerate(locations):
+        matching_vals[i] = arr[values]
+
+    return matching_vals
 
 
 def main():
@@ -123,7 +129,7 @@ def main():
     
     oxy = find_rating(binary_array, True, False)
     #carbo = find_rating(binary_array, False, True)
-
+    print(BtD(oxy))
 
 if __name__ == "__main__":
     try:

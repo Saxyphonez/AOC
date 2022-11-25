@@ -11,6 +11,7 @@ def main():
     #take in day number
     #create folder/ folder structure   
     #create input.txt
+    #create test_input.txt
     #create 2x python files with basic code in #where does the code come from #write the day on top?
 
     print("done")

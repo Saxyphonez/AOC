@@ -6,7 +6,7 @@ try:
 except:
     print("Imports failed")
 
-TEST = True
+TEST = False
 
 if TEST:
     input_filename = "test_input.txt"
@@ -91,15 +91,22 @@ def BtD(binary_arr):
 
 def find_rating(binary_array, oxy, carbo):
     buffer = binary_array
-    #rating = []
     posn = 0
 
     while len(buffer) > 1:
-        rows, columns = buffer.shape
-        #if oxy:
         #gamma oxy, epsilon carbo
-        gamma, epsilon = find_occurence(buffer, True, False) #(buf, oxy, carbo)
-        buffer = matching_values(buffer, posn, gamma[posn])
+    
+        if oxy:
+            gamma, epsilon = find_occurence(buffer, True, False) #(buf, oxy, carbo)
+            buffer = matching_values(buffer, posn, gamma[posn])
+
+        elif carbo:
+            gamma, epsilon = find_occurence(buffer, False,True) #(buf, oxy, carbo)
+            buffer = matching_values(buffer, posn, epsilon[posn])
+
+        else:
+            logging.info("cant decide oxy vs carbo")
+
         posn += 1
 
     rating = buffer[0]
@@ -128,8 +135,9 @@ def main():
     #gamma, epsilon = find_occurence(binary_array)
     
     oxy = find_rating(binary_array, True, False)
-    #carbo = find_rating(binary_array, False, True)
-    print(BtD(oxy))
+    carbo = find_rating(binary_array, False, True)
+    print(BtD(oxy) * BtD(carbo))
+
 
 if __name__ == "__main__":
     try:

@@ -6,12 +6,24 @@ except:
     print("Imports failed")
 
 
+def get_input():
+    input = []
+
+    input_filepath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "input.txt")
+    #print(input_filepath)
+
+    with open(input_filepath,'r') as f:
+        input = f.readlines()
+
+    #f.close()
+
+    
+
+    #return directions_split
+
 
 def main():
-    #take in day number
-    #create folder structure   
-    #create input.txt
-    #create 2x python files with basic code in #where does the code come from
+
 
     print("done")
 

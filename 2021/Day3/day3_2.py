@@ -6,7 +6,7 @@ try:
 except:
     print("Imports failed")
 
-TEST = False
+TEST = True
 
 if TEST:
     input_filename = "test_input.txt"
@@ -39,7 +39,7 @@ def split_binary(binary_nums):
     
     return np.array(arr)
 
-def find_occurence(binary_arr):
+def find_occurence(binary_arr, oxy, carbo):
     zero_occur = 0
     one_occur = 0
     rows, columns = binary_arr.shape
@@ -68,13 +68,18 @@ def find_occurence(binary_arr):
             gamma[c] = 1
             epsilon[c] = 0
 
+        elif one_occur == zero_occur:
+            if oxy:
+                gamma[c] = 1 #keep values with a 1
+            else:
+                epsilon[c]=0 #keep values with a 0
         else:
-            logging.error("Issue with comparing")
-        
+            logging.error("Cannot compare occurences")
+
         zero_occur = 0
         one_occur = 0
 
-    return BtD(gamma), BtD(epsilon)
+    return gamma, epsilon
 
 def BtD(binary_arr):
     dec = 0
@@ -84,12 +89,40 @@ def BtD(binary_arr):
 
     return dec
 
+def find_rating(binary_array, oxy, carbo):
+    buffer = binary_array
+    #rating = []
+    posn = 0
+
+    while len(buffer) > 1:
+        rows, columns = buffer.shape
+        #if oxy:
+        #gamma oxy, epsilon carbo
+        gamma, epsilon = find_occurence(buffer, True, False) #(buf, oxy, carbo)
+        buffer = matching_values(buffer, posn, gamma[posn])
+        
+
+    return buffer
+
+def matching_values(arr, pos, match_val):
+    #buffer = np.empty((1,arr.shape[1]))
+
+    for i in range(len(arr)):
+        value_int = int(arr[i][pos])
+
+        if value_int == match_val:
+            buffer = np.concatenate(buffer,arr[i])
+    
+    return buffer
+
 
 def main():
 
     binary_array = get_input()
-    gamma, epsilon = find_occurence(binary_array)
-    print(gamma*epsilon)
+    #gamma, epsilon = find_occurence(binary_array)
+    
+    oxy = find_rating(binary_array, True, False)
+    #carbo = find_rating(binary_array, False, True)
 
 
 if __name__ == "__main__":

@@ -2,6 +2,8 @@ try:
     import logging
     import os
     from enum import Enum
+    import pandas as pd
+    import numpy as np
 
 except:
     print("Imports failed")
@@ -52,26 +54,72 @@ class Cart:
         #for turning the corner
         pass
 
+class Track_Direction(Enum):
+    UD = 0
+    LR = 1
+    BEND_L = 2
+    BEND_R = 3
+
+class Track_Type(Enum):
+    STRAIGHT = 0
+    CURVE = 1
+    INTERSECTION = 2
+
+class Track:
+    track_type = None
+    track_bend = None
+
+    def __init__(self, track_type, x, y):
+        self.track_type = track_type
+        self.x = x #starting state
+        self.y = y
+
+    def bend_direction(self, surrounding_tracks):
+        pass
+
+
+#def find_carts:
 
 if TEST:
-    input_filename = "test_input.txt"
+    input_filename = "test_input_full.txt"
 else:
     input_filename = "input.txt"
 
 def get_input():
     input = []
-
     input_filepath = os.path.join(os.path.dirname(os.path.realpath(__file__)), input_filename)
 
     with open(input_filepath,'r') as f:
-        input = f.readlines()
+        input = f.read().splitlines()
 
-    #return input
+    indiv = []
+    for i, val in enumerate(input):
+
+        indiv.append(list(val))
+
+    df = pd.DataFrame(indiv)
+    return df
+
+def parse_start(board_start):
+    x_lim, y_lim = board_start.shape
+    carts = []
+    board = []
+
+    for x in range(x_lim) : #x across, y down
+        for y in range(y_lim):
+            item = board_start.iloc[(x,y)]
+
+           # if item == 'v' or item == '^' or item == '<' or item == '>':
+            #based on item
+            #else:
+                
 
 def main():
+    df_board_input = get_input()
+    #parse_start(df_board_input)
 
 
-    print("done")
+    print(df_board_input)
 
 
 if __name__ == "__main__":

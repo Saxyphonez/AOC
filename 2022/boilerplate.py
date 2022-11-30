@@ -36,14 +36,6 @@ def main():
     except FileExistsError:
         print("Folder already exists")
 
-    #create input.txt
-    with open(os.path.join(folder_dir, INPUT),'w') as f:
-        pass
-
-    #create test_input.txt
-    with open(os.path.join(folder_dir, TEST_INPUT),'w') as f:
-        pass
-
     #create 2x python files with basic code in #where does the code come from #write the day on top?
     template_name = os.path.join(current_dir,"template.py")
     part_1_title = DAY + str(n) +".py"
@@ -61,6 +53,14 @@ def main():
     
     origin = repo.remote('origin')
     origin.push()
+
+    #create input.txt
+    with open(os.path.join(folder_dir, INPUT),'w') as f:
+        pass
+
+    #create test_input.txt
+    with open(os.path.join(folder_dir, TEST_INPUT),'w') as f:
+        pass
 
     print("done")
 

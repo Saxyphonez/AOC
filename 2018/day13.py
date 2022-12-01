@@ -162,6 +162,7 @@ def parse_start(board_start):
     df_cart_map = pd.DataFrame(index=range(x_lim),columns=range(y_lim))
     df_track_map = df = pd.DataFrame(index=range(x_lim),columns=range(y_lim))
 
+    cart_count = 0
 
     for x in range(x_lim) : #x across, y down
         for y in range(y_lim):
@@ -177,6 +178,7 @@ def parse_start(board_start):
                 continue
 
             elif item == 'v' or item == '^' or item == '<' or item == '>':
+                cart_count += 1
                 cart = Cart(direction=get_direction_of_cart(item), 
                             x=x, 
                             y=y)
@@ -207,19 +209,23 @@ def parse_start(board_start):
                 exit()
 
 
-    print_track(df_track_map)
-    print(df_cart_map)
-    return df_track_map, df_cart_map
+    #print_track(df_track_map)
+    #print(df_cart_map)
+    return df_track_map, df_cart_map, cart_count
                 
-#def find_carts:
+def decide_next_state(track_map, cart_map, cart_count):
+    #
+    pass
 
+#def update():
 
 def main():
     df_board_input = get_input()
     print(df_board_input)
-    df_track_map, df_cart_map = parse_start(df_board_input) #the cart map overlays on track map
+    df_track_map, df_cart_map, cart_count = parse_start(df_board_input) #the cart map overlays on track map
 
-
+    #decide_next_state(df_track_map, df_cart_map, cart_count)
+    #update()
     #print(df_board_input)
 
 

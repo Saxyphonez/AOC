@@ -3,6 +3,7 @@ try:
     import os
     import shutil
     from git import *
+    from pathlib import Path
 
 except:
     print("Imports failed")
@@ -44,8 +45,10 @@ def main():
     part_2_title = DAY + str(n) +"_2.py"
     shutil.copyfile(template_name, os.path.join(folder_dir, part_2_title))
 
-    git_repo_path = "C:\\Users\\adi.revat\\LocalDocs\\adi_personal\\AOC"
-
+    p = Path(os.path.dirname(os.path.realpath(__file__)))
+    git_repo_path = p.parent
+    
+    
     repo = Repo(git_repo_path)
     #repo.index.add(folder_dir)
     repo.index.add(folder_dir)
@@ -53,7 +56,7 @@ def main():
     
     origin = repo.remote('origin')
     origin.push()
-
+    
     #create input.txt
     with open(os.path.join(folder_dir, INPUT),'w') as f:
         pass

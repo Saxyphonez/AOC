@@ -51,7 +51,7 @@ def make_stacks(raw_input):
         raw_input[i] = value.replace("\n", " ")
 
     clean_stack = clean_stack_items(raw_input)
-    iterations_needed = int(clean_stack.shape[0])
+    iterations_needed = int(clean_stack.shape[1])
 
     #take clean_stack and split into separate columns
     for i in range(iterations_needed):
@@ -74,7 +74,7 @@ def clean_stack_items(dirty):
                 letter = re.match(r"\[(.*?)\]",tmp).string
                 clean_buf.append(letter.strip())
 
-    clean = np.reshape(clean_buf, (NUM_OF_STACK, -1))
+    clean = np.reshape(clean_buf, (-1, NUM_OF_STACK))
     return clean
 
 def main():

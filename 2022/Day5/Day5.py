@@ -55,7 +55,9 @@ def make_stacks(raw_input):
 
     #take clean_stack and split into separate columns
     for i in range(iterations_needed):
-        stack.append(clean_stack[:,i])
+        tmp = clean_stack[:,i].tolist()
+        tmp.reverse()
+        stack.append(tmp)
 
     return stack
 
@@ -69,6 +71,7 @@ def clean_stack_items(dirty):
 
             if re.match(r"\s{4}",tmp):
                 clean_buf.append(" ")
+                continue
 
             elif re.match(r"\[(.*?)\]",tmp):
                 letter = re.match(r"\[(.*?)\]",tmp).string
@@ -77,11 +80,34 @@ def clean_stack_items(dirty):
     clean = np.reshape(clean_buf, (-1, NUM_OF_STACK))
     return clean
 
+def do_move(stack, move):
+    #move = [amount, from stack num, to stack num]
+    # stack numbers-1 cos 0 based
+    for i in range(move[0]):
+        crate_to_move = stack[move[1]-1][-1]
+        stack[move[2]-1].append(crate_to_move)
+        stack[move[1]-1].pop()
+
+    return stack
+
+def print_tops(stacks):
+    for i, value in enumerate(stacks):
+        print(stacks[i][-1])
+
+
 def main():
 
     stacks_raw, moves = get_input() 
     stack = make_stacks(stacks_raw)
-    #moves = [from stack num, amount, to stack num]
+    #moves = [amount, from stack num, to stack num]
+    for i, value in enumerate(stack):
+        tmp = [x for x in value if not x.isspace()]
+        stack[i] = tmp 
+
+    for i, move in enumerate(moves):
+        stack = do_move(stack, move)
+    
+    print_tops(stack)
     print("done")
 
 

@@ -45,18 +45,22 @@ def get_input():
 
 
 def make_stacks(raw_input):
-    
+    stack = []
 
     for i, value in enumerate(raw_input):
         raw_input[i] = value.replace("\n", " ")
 
     clean_stack = clean_stack_items(raw_input)
+    iterations_needed = int(clean_stack.shape[0])
+
     #take clean_stack and split into separate columns
+    for i in range(iterations_needed):
+        stack.append(clean_stack[:,i])
 
     return stack
 
 def clean_stack_items(dirty):
-    clean = []
+    clean_buf = []
     length = int(len(dirty[0])/4)
 
     for i, value in enumerate(dirty):
@@ -64,12 +68,13 @@ def clean_stack_items(dirty):
             tmp = value[4*j:(4*j)+4]
 
             if re.match(r"\s{4}",tmp):
-                clean.append(" ")
+                clean_buf.append(" ")
 
             elif re.match(r"\[(.*?)\]",tmp):
                 letter = re.match(r"\[(.*?)\]",tmp).string
-                clean.append(letter.strip())
+                clean_buf.append(letter.strip())
 
+    clean = np.reshape(clean_buf, (NUM_OF_STACK, -1))
     return clean
 
 def main():

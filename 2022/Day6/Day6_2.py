@@ -5,7 +5,8 @@ try:
 except:
     print("Imports failed")
 
-TEST = True
+TEST = not True
+MARKER_LENGTH = 14
 
 if TEST:
     input_filename = "test_input.txt"
@@ -21,11 +22,31 @@ def get_input():
     with open(input_filepath,'r') as f:
         input = f.readlines()
 
-    #return input
+    input = [list(x.strip()) for x in input]
+    return input
+
+def find_marker(input):
+    input_len = len(input)
+    four_char_buf = []
+
+    for i in range(input_len):
+        four_char = input[i:i+MARKER_LENGTH]
+
+        if len(set(four_char)) == MARKER_LENGTH:
+            return i+MARKER_LENGTH
+        else:
+            continue
+
 
 def main():
 
-
+    input =  get_input()
+    #print(input)
+    for i, val in enumerate(input):
+        loc = find_marker(val)
+        print(loc)
+    #answers for test:
+    #5,6,10,11
     print("done")
 
 

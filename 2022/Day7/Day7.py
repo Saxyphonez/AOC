@@ -6,6 +6,7 @@ except:
     print("Imports failed")
 
 TEST = not True
+FULL_LIST = []
 
 if TEST:
     input_filename = "test_input.txt"
@@ -76,10 +77,7 @@ class Directory():
         self.this_dir_total_size = self.files_size + self.sub_dir_size
 
     def dir_contents(self):
-        buf = []
-        buf.append(self.sub_dirs)
-        buf.append(self.files)
-        return buf.copy()
+        return self.sub_dirs
 
 class File():
 
@@ -108,6 +106,7 @@ def get_input():
 
 def parse(input):
     root = Directory("/", None)
+    FULL_LIST.append(root)
     i = 1
     cwd = root
 
@@ -125,6 +124,7 @@ def parse(input):
                     if tmp[0] == 'dir':
                         new_sub_dir = Directory(tmp[1], cwd)
                         cwd.add_sub_dir(new_sub_dir)
+                        FULL_LIST.append(new_sub_dir)
 
                     elif tmp[0] != 'dir':
                         file = File(tmp[1],int(tmp[0]), cwd)
@@ -177,16 +177,6 @@ def collect_useful_lines(input, i):
 
     return list_files_dirs, j+1
 
-def find_all(root):
-    dirs = root.sub_dirs
-    buf = []
-    for i, dir in enumerate(dirs):
-        if dir.sub_dirs:
-            buf.append(find_all(dir))
-        else:
-            return dir
-    
-
 
 
 def main():
@@ -208,23 +198,15 @@ def main():
 		}
     }
     """
-    full_dir_list = []
-    for i, dir in enumerate(root.sub_dirs):
-        full_dir_list.append(dir)
-        if dir.sub_dirs:
-            full_dir_list.append(find_all(dir))
-        else:
-            continue
-
     sum = 0
-
-    for i, dir in enumerate(full_dir_list):
-        if dir.this_dir_total_size <= 100000:
-            sum += dir.this_dir_total_size
+    for i, dir in enumerate(FULL_LIST):
+        size = dir.this_dir_total_size
+        if size<=100000:
+            sum+=size
         else:
             continue
-    
     print(sum)
+
     print("done")
 
 

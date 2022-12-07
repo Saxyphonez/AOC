@@ -39,16 +39,16 @@ class Track_Type(Enum):
 class Cart:
 
     #Class variables
-    next_move = NextMove.NOTHING #for intersections
-    previous_move = NextMove.NOTHING
-    cart_string = None
-    current_direction = None
+
+
 
     def __init__(self, direction, x, y):
         self.current_direction = direction
         self.x= x #starting state
         self.y = y
         self.cart_string = self.set_cart_string(self.current_direction)#set the string to print
+        self.next_move = NextMove.NOTHING #for intersections
+        self.previous_move = NextMove.NOTHING
 
     def set_cart_string(self, direction):
         match direction:

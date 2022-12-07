@@ -5,7 +5,8 @@ try:
 except:
     print("Imports failed")
 
-TEST = True
+TEST = not True
+FULL_LIST = []
 
 if TEST:
     input_filename = "test_input.txt"
@@ -33,42 +34,61 @@ create an object for a directory containing:
 """
 
 class Directory():
-    files = []
-    files_size = 0 # total
-
-    sub_dirs = []
-    sub_dir_size = 0 #total size of sub directories
-
-    this_dir_total_size = 0#total 
-
-    parent_dir = None
+    def __repr__(self):
+        return str(self.name)
 
     def __init__(self, name, parent_dir):
         self.name = name
         self.parent_dir = parent_dir
 
+        self.files = []
+        self.files_size = 0 # total
+
+        self.sub_dirs = []
+        self.sub_dir_size = 0 #total size of sub directories
+
+        self.this_dir_total_size = 0#total 
+
     def add_file(self, file_to_add):
         self.files.append(file_to_add)
-        self.update_files_size(file_to_add[0])
-        self.update_total_dir_size()
 
     def add_sub_dir(self, dir_to_add):
-        self.files.append(dir_to_add)
-        self.update_subdir_size()
+        self.sub_dirs.append(dir_to_add)
 
-    def update_files_size(self, size_to_add):
-        self.files_size += size_to_add
-
-    def update_subdir_size(self):
+    def get_total_files_size(self): # for only this directory and not sub directories
         total = 0
-        for i, value in enumerate(self.sub_dirs):
-            total += value.files_size
+        
+        for i, fileObj in enumerate(self.files):
+             total += fileObj.size
+
+        self.files_size = total
+        self.update_this_dir_size()
+        
+    def get_size_all_subdir(self):
+        total = 0
+
+        for i, subdirObj in enumerate(self.sub_dirs):
+            total += subdirObj.this_dir_total_size
 
         self.sub_dir_size = total
+        self.update_this_dir_size()
 
-    def update_total_dir_size(self):
+    def update_this_dir_size(self):
         self.this_dir_total_size = self.files_size + self.sub_dir_size
 
+    def dir_contents(self):
+        return self.sub_dirs
+
+class File():
+
+
+    def __init__(self, name, size, parent_dir):
+        self.name = name
+        self.size = size
+        self.parent_dir = parent_dir
+
+    def __repr__(self):
+        return str(self.name + " " +str(self.size))
 
 def get_input():
     input = []
@@ -86,10 +106,12 @@ def get_input():
 
 def parse(input):
     root = Directory("/", None)
+    FULL_LIST.append(root)
     i = 1
     cwd = root
-    while(i<len(input)):
 
+    while(i<len(input)):
+    
         line = input[i].split(" ")
 
         if line[0] == '$':
@@ -102,26 +124,40 @@ def parse(input):
                     if tmp[0] == 'dir':
                         new_sub_dir = Directory(tmp[1], cwd)
                         cwd.add_sub_dir(new_sub_dir)
+                        FULL_LIST.append(new_sub_dir)
 
                     elif tmp[0] != 'dir':
-                        cwd.add_file(tmp)
+                        file = File(tmp[1],int(tmp[0]), cwd)
+                        cwd.add_file(file)
+                        cwd.get_total_files_size()
 
             elif line[1] == 'cd':
+                cwd.get_size_all_subdir()
                 if line[2] == '..':
                     next_dir = cwd.parent_dir
                     cwd = next_dir
+                    i_next = i+1
                 else:
-                    #find that dir object
-                    #change to that dir
-                    pass
-                    
+                    next_dir_name = line[2]
+                    next_dir = find_sub_dir(next_dir_name,cwd.sub_dirs)
+                    cwd = next_dir
+                    i_next = i+1
 
-
-    i = i_next
-
-
+        root.get_total_files_size()
+        root.get_size_all_subdir()
+        root.update_this_dir_size()            
+        i = i_next
 
     return root
+
+def find_sub_dir(dir_name, sub_dirs_list):
+
+    for i, value in enumerate(sub_dirs_list):
+        if value.name == dir_name:
+            return  value
+        else:
+            #logging.error("didnt find that directory")
+            continue
 
 
 def collect_useful_lines(input, i):
@@ -139,7 +175,7 @@ def collect_useful_lines(input, i):
         else:
             list_files_dirs.append(input[j])
 
-    #return list_files_dirs, j+1
+    return list_files_dirs, j+1
 
 
 
@@ -147,6 +183,30 @@ def main():
 
     input = get_input()
     root = parse(input)
+    #print(root.this_dir_total_size)
+
+    #traverse tree, check each total size is < 100000
+    """
+    function findInputFiles(workDirectory) {
+	list = getFileList(workDirectory);
+	
+	for (i=0; i<list.length; i++) {
+		if (endsWith(list[i], "/"))
+			findInputFiles(workDirectory+list[i]);
+		else if (endsWith(list[i], ".avi"))
+			runAnalysis(workDirectory+list[i]);
+		}
+    }
+    """
+    sum = 0
+    for i, dir in enumerate(FULL_LIST):
+        size = dir.this_dir_total_size
+        if size<=100000:
+            sum+=size
+        else:
+            continue
+    print(sum)
+
     print("done")
 
 

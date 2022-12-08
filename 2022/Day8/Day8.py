@@ -1,6 +1,7 @@
 try:
     import logging
     import os
+    import pandas as pd
 
 except:
     print("Imports failed")
@@ -20,12 +21,16 @@ def get_input():
 
     with open(input_filepath,'r') as f:
         input = f.readlines()
-
-    #return input
+    input = [list(x.strip()) for x in input]
+    df = pd.DataFrame(list(input))
+    return df
 
 def main():
+    df_input = get_input()
+    print(df_input.values)
 
-
+    perimeter = ((2*df_input.shape[0]) + 2*(df_input.shape[1]-2))
+    print(perimeter)
     print("done")
 
 

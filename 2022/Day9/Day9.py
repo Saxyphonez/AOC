@@ -5,9 +5,9 @@ try:
 except:
     print("Imports failed")
 
-TEST = True
-BOARD_L = 10
-BOARD_W = 10
+TEST = not True
+BOARD_L = 50
+BOARD_W = 50
 """
 input parsing for the moves
 
@@ -70,22 +70,26 @@ def move_h(move, h_obj):
     match dir:
         case 'U':
             new_y = h_obj.get_y() + 1
-            h_obj.set_y(new_y)
+            if new_y < BOARD_W or new_y >=0:
+                h_obj.set_y(new_y)
 
 
         case 'D':
             new_y = h_obj.get_y() - 1
-            h_obj.set_y(new_y)
+            if new_y < BOARD_W or new_y >=0:
+                h_obj.set_y(new_y)
 
 
         case 'L':
             new_x = h_obj.get_x() - 1
-            h_obj.set_x(new_x)
+            if new_x < BOARD_L or new_x >=0:
+                h_obj.set_x(new_x)
 
 
         case 'R':
             new_x = h_obj.get_x() + 1
-            h_obj.set_x(new_x)
+            if new_x < BOARD_L or new_x >=0:
+                h_obj.set_x(new_x)
             
 
 def move_t(t_obj, x_move, y_move):
@@ -104,28 +108,47 @@ def calculate_tail_move(h_obj, t_obj, board):
     t_x = t_obj.get_x()
     t_y = t_obj.get_y()
 
-    x_move = 0
-    y_move = 0
+    x_diff = h_x - t_x
+    y_diff = h_y - t_y
 
     #figure out move here:
     #do the moves as + and - 
-    #if x_diff >=2 #L/R
-    #if y_diff >=2 #U/D
-    #if (ABC):
-        #move diagonal
+    if abs(x_diff) >=2 and abs(y_diff) == 0: #L/R
+        if x_diff > 0:
+            move_t(t_obj, 1, 0)
+        elif x_diff < 0:
+            move_t(t_obj, -1, 0)
 
-    #move the tail
-    move_t(t_obj, x_move, y_move)
+    elif abs(y_diff) >=2 and abs(x_diff) == 0: #U/D
+        if y_diff > 0:
+            move_t(t_obj, 0, 1)
+        elif y_diff < 0:
+            move_t(t_obj, 0, -1)
+
+    else:
+        if (x_diff == -1 and y_diff == 2) or (x_diff == -2 and y_diff == 1):
+            #move left and up
+            move_t(t_obj, -1, 1)
+        elif (x_diff == 1 and y_diff == 2) or (x_diff == 2 and y_diff == 1):
+            #move right and up
+            move_t(t_obj, 1, 1)
+        elif (x_diff == 1 and y_diff == -2) or (x_diff == 2 and y_diff == -1):
+            #move right and down
+            move_t(t_obj, 1, -1)
+        elif (x_diff == -1 and y_diff == -2) or (x_diff == -2 and y_diff == -1):
+            #move left and down
+            move_t(t_obj, -1, -1)
 
     #update board:
-    board[t_obj.get_y()][t_obj.get_x()] += 1 
+    board[(BOARD_L - 1) - t_obj.get_y()][t_obj.get_x()] += 1 
+
 
 def is_touching(h_obj, t_obj):
     #figure out
     x_diff = abs(h_obj.get_x() - t_obj.get_x())
     y_diff = abs(h_obj.get_y() - t_obj.get_y())
 
-    if (x_diff <=1 and y_diff<=1) or (x_diff ==1 and y_diff ==1):
+    if (x_diff <=1 and y_diff<=1) or (x_diff == 1 and y_diff == 1):
         return True
 
     else:
@@ -135,6 +158,7 @@ def main():
     head = RopeEnd("H", 0, 0)
     tail = RopeEnd("T", 0, 0)
     board = []
+
     moves = get_input()
 
     tmp = list((0 for element in range(BOARD_W)))
@@ -143,20 +167,31 @@ def main():
 
     board[BOARD_L-1][0] = 1 
     
-
     for i, instruction in enumerate(moves):
         repeats = int(instruction[1])
 
         for j in range(repeats):
+            #board[(BOARD_L -1) - head.get_y()][head.get_x()] = 0
+            #board[(BOARD_L -1) - tail.get_y()][tail.get_x()] = 0
+
             move_h(instruction, head)
 
-            if is_touching(head,tail):
-                continue
-            else:
+            if not is_touching(head,tail):
+                #calculate tail move and then move it
                 calculate_tail_move(head, tail, board)
-    
-    
 
+            #board[(BOARD_L -1)- tail.get_y()][tail.get_x()] = "T"
+            #board[(BOARD_L -1)- head.get_y()][head.get_x()] = "H"
+    
+    num_visited_positions = 0
+    for i, row in enumerate(board):
+        for j, pos in enumerate(row):
+            if pos >= 1:
+                num_visited_positions += 1
+            else:
+                continue
+    
+    print(num_visited_positions)
     print("done")
 
 

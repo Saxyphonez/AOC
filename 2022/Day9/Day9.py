@@ -6,8 +6,8 @@ except:
     print("Imports failed")
 
 TEST = not True
-BOARD_L = 50
-BOARD_W = 50
+BOARD_L = 500
+BOARD_W = 500
 """
 input parsing for the moves
 
@@ -113,13 +113,13 @@ def calculate_tail_move(h_obj, t_obj, board):
 
     #figure out move here:
     #do the moves as + and - 
-    if abs(x_diff) >=2 and abs(y_diff) == 0: #L/R
+    if abs(x_diff) ==2 and abs(y_diff) == 0: #L/R
         if x_diff > 0:
             move_t(t_obj, 1, 0)
         elif x_diff < 0:
             move_t(t_obj, -1, 0)
 
-    elif abs(y_diff) >=2 and abs(x_diff) == 0: #U/D
+    elif abs(y_diff) ==2 and abs(x_diff) == 0: #U/D
         if y_diff > 0:
             move_t(t_obj, 0, 1)
         elif y_diff < 0:
@@ -140,7 +140,10 @@ def calculate_tail_move(h_obj, t_obj, board):
             move_t(t_obj, -1, -1)
 
     #update board:
-    board[(BOARD_L - 1) - t_obj.get_y()][t_obj.get_x()] += 1 
+    try:
+        board[(BOARD_L - 1) - t_obj.get_y()][t_obj.get_x()] += 1
+    except IndexError:
+        print(str(t_obj.get_y()) + " "  + str(t_obj.get_x()))
 
 
 def is_touching(h_obj, t_obj):
@@ -155,18 +158,19 @@ def is_touching(h_obj, t_obj):
         return False
 
 def main():
-    head = RopeEnd("H", 0, 0)
-    tail = RopeEnd("T", 0, 0)
+    head = RopeEnd("H", 100, 100)
+    tail = RopeEnd("T", 100, 100)
     board = []
 
     moves = get_input()
 
     tmp = list((0 for element in range(BOARD_W)))
+
     for i in range(BOARD_L):
         board.append(tmp.copy())
 
-    board[BOARD_L-1][0] = 1 
-    
+    board[BOARD_L-1 - tail.get_y()][tail.get_x()] = 1 
+
     for i, instruction in enumerate(moves):
         repeats = int(instruction[1])
 

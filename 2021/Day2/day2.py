@@ -10,7 +10,7 @@ def get_input():
     directions_split = []
 
     input_filepath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "input.txt")
-    #print(input_filepath)
+    print(input_filepath)
 
     with open(input_filepath,'r') as f:
         input = f.readlines()

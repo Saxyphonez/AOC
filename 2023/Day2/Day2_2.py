@@ -25,9 +25,13 @@ class Game:
         self.game_text = game_text.strip() #each of the draws, separated by semicolons
         self.num_draws = game_text.count(";") + 1
 
+        self.minimum_rgb = [0,0,0]
+
         #dict: {<drawID>: [R,G,B]}
         self.draws = {}
         self.parse_game(self.game_text)
+
+        self.power = self.calculate_game_power()
 
 
     def parse_game(self, game_text):
@@ -43,6 +47,15 @@ class Game:
 
             self.draws[i] = rgb_buf
             #dict: {<drawID>: [R,G,B]}
+
+            #Find out the minimum balls needed:
+            #Updated for each draw
+            if i==0:
+                self.minimum_rgb = rgb_buf
+            else:
+                for i, num_of_balls in enumerate(rgb_buf):
+                    if num_of_balls > self.minimum_rgb[i]:
+                        self.minimum_rgb[i] = num_of_balls
 
 
     def get_RGB(self, text):
@@ -72,6 +85,13 @@ class Game:
                         set_is_possible = False
 
         return rgb, set_is_possible
+
+    def calculate_game_power(self):
+        power = 1
+        for val in self.minimum_rgb:
+            power *= val
+
+        return power
 
     def is_possible(self):
         return self.game_is_possible
@@ -105,13 +125,12 @@ def main():
     for i, game in enumerate(raw_games):
         games.append(Game(ID = i+1, game_text = game.split(":")[1]))
         
-    total = 0
+    total_power = 0
     for game in games:
-        if game.is_possible():
-            print("Game{} is possible".format(game.gameID))
-            total += game.gameID
+            #print(game.power)
+            total_power += game.power
 
-    print(total)
+    print("Total power = {}".format(total_power))
     print("done")
 
 

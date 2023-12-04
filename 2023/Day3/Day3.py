@@ -6,7 +6,7 @@ try:
 except:
     print("Imports failed")
 
-TEST = True
+TEST = not True
 
 if TEST:
     input_filename = "test_input.txt"
@@ -19,8 +19,8 @@ class Schematic:
     def __init__(self, sch_txt):
        
         self.board = []#[y coord(inc as you go down)][x coord ]
-        self.symbols = {}
-        self.numbers = {}
+        self.symbols = []
+        self.numbers = []
 
         self.parse_input(sch_txt)
         
@@ -45,7 +45,7 @@ class Schematic:
                 symbol_buffer.append(self.record_symbol(match_obj= match_sym, line = i+1))
 
             if len(symbol_buffer) > 0:
-                self.symbols[i+1] = symbol_buffer.copy()
+                self.symbols.extend(symbol_buffer.copy())
 
             #use regex to find numbers
            
@@ -53,7 +53,7 @@ class Schematic:
                 number_buffer.append(self.record_number(match_obj= match_num, line = i+1))
 
             if len(number_buffer) > 0:
-                self.numbers[i+1] = number_buffer.copy()
+                self.numbers.extend(number_buffer.copy())
 
             
 
@@ -89,26 +89,27 @@ class Symbol:
         self.name = symbol
 
     def __repr__(self):
-        str = "{} (Y{}:,X:{})".format(self.name, self.y, self.x)
+        str = "{} (Y:{},X:{})".format(self.name, self.y, self.x)
         return(str)
     
     def __str__(self):
-        str = "{} (Y{}:,X:{})".format(self.name, self.y, self.x)
+        str = "{} (Y:{},X:{})".format(self.name, self.y, self.x)
         return(str)
 
 
 class Number:
     def __init__(self, number, x, y):
-        self.x_pos = x
+        self.x_pos = [x[0], x[1]]
         self.y = y
         self.num = str(number)
+        self.is_part = False
 
     def __repr__(self):
-        str = "{} (Y{}:,X:{})".format(self.num, self.y, self.x_pos)
+        str = "{} (Y:{},X:{})".format(self.num, self.y, self.x_pos)
         return(str)
     
     def __str__(self):
-        str = "{} (Y{}:,X:{})".format(self.num, self.y, self.x_pos)
+        str = "{} (Y:{},X:{})".format(self.num, self.y, self.x_pos)
         return(str)
 
 
@@ -129,6 +130,32 @@ def main():
     input = get_input()
     schematic = Schematic(input)
 
+    for symbol in schematic.symbols:
+        sym_x = symbol.x
+        sym_y = symbol.y
+        sym_x_range = {sym_x-1, sym_x, sym_x+1}
+
+        for number in schematic.numbers:
+            num_x = {*range(number.x_pos[0], number.x_pos[1])}
+            num_y = number.y
+
+            if ((num_y == sym_y-1) and (sym_x_range.intersection(num_x))):
+                number.is_part = True
+
+            elif ((num_y == sym_y) and (sym_x_range.intersection(num_x))):
+                number.is_part = True
+
+            elif((num_y == sym_y+1) and (sym_x_range.intersection(num_x))):
+                number.is_part = True
+            else:
+                #print("{} not part for symbol [{}]".format(number.num, symbol))
+                pass
+
+    total = 0
+    for number in schematic.numbers:
+        if number.is_part:
+            total+=int(number.num)
+    print(total)
     print("done")
 
 

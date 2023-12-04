@@ -31,25 +31,29 @@ class Schematic:
     def parse_input(self, text):
         symbol_buffer = []
         for i, line in enumerate(text):
+            symbol_buffer.clear()
             self.board.append(line)
 
             #use regex to find symbols
             pattern = re.compile(r"(?:[^\.0-9\n])")
-            regex_symbols = re.findall(pattern, line)
 
             #for each symbol, get x and y and type
-            for symbol_text in regex_symbols:
-                symbol_buffer.append(self.record_symbol(symbol_text, line = i+1))
+            for match in re.finditer(pattern, line):
+                symbol_buffer.append(self.record_symbol(match_obj= match, line = i+1))
             
             #append to big dict of symbols (list of symbols - value) on a line (key)
-            self.symbols[i+1] = symbol_buffer
-            symbol_buffer.clear()
+            if len(symbol_buffer) > 0:
+                self.symbols[i+1] = symbol_buffer.copy()
+            
 
-    def record_symbol(self, symbol_text, line):
-        print(symbol_text)
-        #symbol = Symbol(symbol, x,yline)
+    def record_symbol(self, match_obj, line):
+        # print(match_obj.group())
+        # print(line)
+        symbol = Symbol(symbol = match_obj.group(),
+                        x = match_obj.start(),
+                        y = line)
 
-        #return symbol
+        return symbol
 
     def __repr__(self):
         str = "TODO rpr"
@@ -61,18 +65,18 @@ class Schematic:
 
 
 class Symbol:
-    def __init__(self, symbol, x, y, line):
+    def __init__(self, symbol, x, y):
         self.x = x
         self.y = y
         self.name = symbol
-        self.line = line
+
 
     def __repr__(self):
-        str = "Line:{}, {} (Y{}:,X:{})".format(self.line, self.name, self.y, self.x)
+        str = "{} (Y{}:,X:{})".format(self.name, self.y, self.x)
         return(str)
     
     def __str__(self):
-        str = "Line{}, {} (Y{}:,X:{})".format(self.line, self.name, self.y, self.x)
+        str = "{} (Y{}:,X:{})".format(self.name, self.y, self.x)
         return(str)
 
 

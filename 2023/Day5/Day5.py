@@ -14,23 +14,30 @@ else:
     input_filename = "input.txt"
 
 class Map:
-    def __init__(self,name, map_details):
+    def __init__(self,map_details):
         
         #fill these text feels in for repr str to make debug easier
-        self.name = name
-        self.source_txt = ""
-        self.dest_text = ""
+        self.source_txt,\
+            self.dest_text = self.get_source_dest(map_details)
 
         #x y z
         #dest start, source start, range
         #sources = [range(y,y+z-1)] dests = [range(x,x+z-1)]. query sets?
         #else 1-to-1
 
-        self.map_dict = create_dict(map_details) #key=source: val=destination
+        self.map_dict = self.create_map(map_details) #key=source: val=destination
+
+    def get_source_dest(self,details):
+        hyphenated = details[0]
+        hyphenated = hyphenated.split(" ")
+        source = hyphenated[0].split("-")[0]
+        dest = hyphenated[0].split("-")[2]
+
+        return source, dest
+
 
     def create_map(self, details):
         map_dict = {}
-
 
         return map_dict
 
@@ -88,13 +95,30 @@ def get_input():
     with open(input_filepath,'r') as f:
         input = f.readlines()
 
-    input = [line.strip() for line in input]
-    return input
+    #get index of all newline char
+    line_break_index = [i for i, line in enumerate(input) if line=="\n"]
+    print([i+1 for i in line_break_index])
+
+    output = []
+    output.append([input[0]])
+    for i in range(0, len(line_break_index)):
+        if i == len(line_break_index)-1:
+            output.append(input[line_break_index[i]+1:-1])
+        else:
+            output.append(input[line_break_index[i]+1:line_break_index[i+1]])
+
+    return output
 
 def main():
-    raw_input = get_input
+    raw_input = get_input()
+    seeds_input = raw_input[0]
+    maps_input = raw_input[1:]
 
     #parse input and create maps
+    map_list = []
+    for i, map in enumerate(maps_input):
+        map_list.append(Map(map))
+
 
     #parse input and create seeds
 
@@ -103,10 +127,10 @@ def main():
 
 if __name__ == "__main__":
     try:
-        total_time = timeit.timeit('main', number=1, globals=globals())
-        #main()
+        #ßtotal_time = timeit.timeit('main', number=1, globals=globals())
+        main()
 
     except KeyboardInterrupt:
         print("KB interrupt detected")
 
-    print('Average time: {} usec'.format((total_time/1)*1e6))
+    #print('Average time: {} usec'.format((total_time/1)*1e6))

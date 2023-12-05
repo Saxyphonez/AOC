@@ -38,8 +38,34 @@ class Map:
 
     def create_map(self, details):
         map_dict = {}
+        ranges = details[1:-1]
+        max_source = 0
 
-        return map_dict
+        for details in ranges:
+            range_details = details.strip().split(" ")
+            source_start = int(range_details[1])
+            destination_start = int(range_details[0])
+            range_size = int(range_details[2])
+
+            source_range = [*range(source_start, source_start+range_size)]
+            destination_range = [*range(destination_start, destination_start+range_size)]
+
+            for i, source in enumerate(source_range):
+                map_dict[source] = destination_range[i]
+                if source > max_source:
+                    max_source = source
+
+        map_dict_sorted = dict(sorted(map_dict.items()))
+
+
+        for i in range(0, max_source):
+            if i not in map_dict_sorted.keys():
+                map_dict_sorted[i] = i
+
+        map_dict_full = dict(sorted(map_dict_sorted.items()))
+
+        return map_dict_full
+
 
     def follow(self, source):
         return self.map_dict[source]
@@ -116,11 +142,13 @@ def main():
 
     #parse input and create maps
     map_list = []
+    seed_list = []
     for i, map in enumerate(maps_input):
         map_list.append(Map(map))
 
-
     #parse input and create seeds
+    #for i, seed in enumerate(seeds_input):
+        #seed_list.append(Seed(seed, map_list)) #TODO fix
 
     print("done")
 

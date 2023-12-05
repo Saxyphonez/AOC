@@ -1,6 +1,7 @@
 try:
     import logging
     import os
+    import timeit
 
 except:
     print("Imports failed")
@@ -32,7 +33,10 @@ def main():
 
 if __name__ == "__main__":
     try:
-        main()
+        total_time = timeit.timeit('main', number=1, globals=globals())
+        #main()
 
     except KeyboardInterrupt:
         print("KB interrupt detected")
+
+    print('Average time: {} usec'.format((total_time/1)*1e6))

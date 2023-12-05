@@ -13,6 +13,23 @@ if TEST:
 else:
     input_filename = "input.txt"
 
+class Map:
+    def __init__(self,name):
+        
+        #fill these text feels in for repr str to make debug easier
+        self.name = name
+        self.source_txt = ""
+        self.dest_text = ""
+
+        #x y z
+        #dest start, source start, range
+        #sources = [range(y,y+z-1)] dests = [range(x,x+z-1)]. query sets?
+        #else 1-to-1
+
+        #self.map_dict = { key=source: val=destination}
+
+
+
 def get_input():
     input = []
 

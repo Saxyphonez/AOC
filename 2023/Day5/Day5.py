@@ -6,7 +6,7 @@ try:
 except:
     print("Imports failed")
 
-TEST = True
+TEST = not True
 
 if TEST:
     input_filename = "test_input.txt"
@@ -14,18 +14,14 @@ else:
     input_filename = "input.txt"
 
 class Map:
-    def __init__(self,map_details):
+    def __init__(self,map_details, max_source):
         
-        #fill these text feels in for repr str to make debug easier
         self.source_txt,\
             self.dest_text = self.get_source_dest(map_details)
 
-        #x y z
-        #dest start, source start, range
-        #sources = [range(y,y+z-1)] dests = [range(x,x+z-1)]. query sets?
-        #else 1-to-1
-
+        self.max_source = max_source
         self.map_dict = self.create_map(map_details) #key=source: val=destination
+        
 
     def get_source_dest(self,details):
         hyphenated = details[0]
@@ -38,7 +34,7 @@ class Map:
 
     def create_map(self, details):
         map_dict = {}
-        ranges = details[1:-1]
+        ranges = details[1:]
         max_source = 0
 
         for details in ranges:
@@ -52,23 +48,27 @@ class Map:
 
             for i, source in enumerate(source_range):
                 map_dict[source] = destination_range[i]
-                if source > max_source:
-                    max_source = source
 
-        map_dict_sorted = dict(sorted(map_dict.items()))
+                if source > self.max_source:
+                    self.max_source = source
 
+        #map_dict_sorted = dict(sorted(map_dict.items()))
 
-        for i in range(0, max_source):
-            if i not in map_dict_sorted.keys():
-                map_dict_sorted[i] = i
+        #fill in the gaps:
+        # for j in range(0, self.max_source):
+        #     if j in map_dict.keys():
+        #         pass
+        #     else:
+        #         map_dict[j] = j
 
-        map_dict_full = dict(sorted(map_dict_sorted.items()))
-
-        return map_dict_full
+        return map_dict
 
 
     def follow(self, source):
-        return self.map_dict[source]
+        if source in self.map_dict.keys():
+            return self.map_dict[source]
+        else:
+            return source
 
     def __repr__(self):
         str = "Map {} to {} ".format(self.source_txt, self.dest_text)
@@ -77,12 +77,15 @@ class Map:
     def __str__(self):
         return(self.__repr__())
 
+
+
 class Seed:
-    def __init__(self,number, map_list):
+    def __init__(self, seed_num, map_list):
         
         self.details = [None]*8
 
-        self.seed = number
+        self.seed = seed_num
+        self.details[0] = self.seed
         # self.soil = None
         # self.fert = None
         # self.water = None
@@ -92,20 +95,17 @@ class Seed:
         # self.humid = None
         # self.loc = None
 
-        self.follow_map(map_list)
+        self.follow_maps(map_list)
         self.loc = self.details[-1]
-            
+        
 
-    def follow_map(self, map_list):
-        for i in range(0,8):
-            if i==0:
-                self.details[i] = self.seed
-            else:
-                self.details[i] = map_list[i].follow(source = self.details[i-1])
+    def follow_maps(self, map_list):
+        for i in range(0,len(self.details)-1):
+            self.details[i+1] = map_list[i].follow(source = self.details[i])
 
 
     def __repr__(self):
-        str = "Seed{}".format(self.number)
+        str = "Seed{}".format(self.seed)
         return(str)
 
     def __str__(self):
@@ -123,7 +123,7 @@ def get_input():
 
     #get index of all newline char
     line_break_index = [i for i, line in enumerate(input) if line=="\n"]
-    print([i+1 for i in line_break_index])
+
 
     output = []
     output.append([input[0]])
@@ -143,19 +143,45 @@ def main():
     #parse input and create maps
     map_list = []
     seed_list = []
+    main_max_source = 0
+
     for i, map in enumerate(maps_input):
-        map_list.append(Map(map))
+        new_map = Map(map, main_max_source)
+        map_list.append(new_map)
+        
+        if new_map.max_source > main_max_source:
+            #print("New bigger value of source")
+            main_max_source = new_map.max_source
 
     #parse input and create seeds
-    #for i, seed in enumerate(seeds_input):
-        #seed_list.append(Seed(seed, map_list)) #TODO fix
+    seed_numbers = seeds_input[0]
+    seed_numbers = seed_numbers.split(":")[1]
+    seeds_list = seed_numbers.split()
 
-    print("done")
+    for i, seed in enumerate(seeds_list):
+        seed_list.append(Seed(int(seed), map_list))
+
+    smallest_loc = 0
+    closest_seed = None
+    for i, seed in enumerate(seed_list):
+        if i == 0:
+            smallest_loc = seed.loc
+            closest_seed = seed
+        else:
+            if seed.loc < smallest_loc:
+                smallest_loc = seed.loc
+                closest_seed = seed
+    
+    print(closest_seed)
+    print(smallest_loc)
+        
+        
+    
 
 
 if __name__ == "__main__":
     try:
-        #ßtotal_time = timeit.timeit('main', number=1, globals=globals())
+        #total_time = timeit.timeit('main', number=1, globals=globals())
         main()
 
     except KeyboardInterrupt:

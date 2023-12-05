@@ -21,7 +21,8 @@ def get_input():
     with open(input_filepath,'r') as f:
         input = f.readlines()
 
-    #return input
+    input = [line.strip() for line in input]
+    return input
 
 def main():
 

@@ -6,7 +6,7 @@ try:
 except:
     print("Imports failed")
 
-TEST = not True
+TEST = True
 #take seed
 #find its range
 #get the destination

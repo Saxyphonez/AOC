@@ -15,7 +15,7 @@ else:
     input_filename = "input.txt"
 
 class HandType(Enum):
-    NONE = 7
+    NONE = 7 #just in case
 
     FIVE_KIND  = 6
     FOUR_KIND  = 5
@@ -34,12 +34,17 @@ class Hand():
         self.bid_int= int(self.bid)
 
         self.hand = list(self.raw_hand)
+        self.type = self.get_HandType(self.hand)
 
 
-    def get_HandType(self):
-        buf = HandType
+    def get_HandType(self, hand_txt):
+        print("start")
+        #(A{5})|(K{5})|(Q{5})|(T{5})|(J{5})
+        for i in range (5,1,-1):
+            regex_txt = "(A{s})|(K{s})|(Q{s})|(T{s})|(J{s})".format(s=i)
+            print(regex_txt)
 
-        return 
+        return True
 
 
     def __repr__(self):

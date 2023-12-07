@@ -3,6 +3,7 @@ try:
     import os
     import timeit
     from enum import Enum
+    import re
 
 except:
     print("Imports failed")
@@ -13,6 +14,15 @@ if TEST:
     input_filename = "test_input.txt"
 else:
     input_filename = "input.txt"
+
+CARDS = []
+FACE_CARDS = "TJQKA"
+for i in range (2,10):
+    CARDS.append(str(i))
+
+CARDS.extend(list(FACE_CARDS))
+
+
 
 class HandType(Enum):
     NONE = 7 #just in case
@@ -25,6 +35,7 @@ class HandType(Enum):
     ONE_PAIR  = 1
     HIGH_CARD  = 0
 
+
 class Hand():
     def __init__(self, raw_data):
         self.raw_hand = raw_data.split(" ")[0].strip()
@@ -34,21 +45,46 @@ class Hand():
         self.bid_int= int(self.bid)
 
         self.hand = list(self.raw_hand)
-        self.type = self.get_HandType(self.hand)
+        self.get_HandType(self.hand)
 
 
     def get_HandType(self, hand_txt):
-        print("start")
-        #(A{5})|(K{5})|(Q{5})|(T{5})|(J{5})
-        for i in range (5,1,-1):
-            regex_txt = "(A{s})|(K{s})|(Q{s})|(T{s})|(J{s})".format(s=i)
-            print(regex_txt)
+        output = {}
+        for x in CARDS:
+            cnt = list(hand_txt).count(x)
+            if cnt > 0:
+                output[x] = cnt
 
-        return True
+        max_cnt = output[max(output, key = output.get)]
 
+        if max_cnt == 5:
+            self.type = HandType.FIVE_KIND
+
+        elif max_cnt == 4:
+            self.type = HandType.FOUR_KIND
+
+        elif max_cnt == 3:
+            print(min(output, key = output.get))
+            if output[min(output, key = output.get)] == 1:
+                self.type = HandType.THREE_KIND
+            else:
+                self.type = HandType.FULL_HOUSE
+
+        elif max_cnt == 2:
+            occurences = list(output.values())
+
+            if occurences.count(2) == 2:
+                self.type = HandType.TWO_PAIR
+            else:
+                self.type = HandType.ONE_PAIR
+
+        else:
+            self.type = HandType.HIGH_CARD
+
+                
 
     def __repr__(self):
-        str = "Hand {} Bid {}".format(self.raw_hand, self.bid_int)
+        str = "Hand {} Bid {} Type {}".format(self.raw_hand, self.bid_int, self.type)
         return(str)
     
     def __str__(self):

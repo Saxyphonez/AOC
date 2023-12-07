@@ -7,7 +7,11 @@ except:
     print("Imports failed")
 
 TEST = not True
-
+#take seed
+#find its range
+#get the destination
+#repeat
+#dont bother with big dicts
 if TEST:
     input_filename = "test_input.txt"
 else:

@@ -7,27 +7,22 @@ except:
     print("Imports failed")
 
 TEST = True
-#take seed
-#find its range
-#get the destination
-#repeat
-#dont bother with big dicts
+
 if TEST:
     input_filename = "test_input.txt"
 else:
     input_filename = "input.txt"
 
 class Map:
-    def __init__(self,map_details, max_source):
+    def __init__(self,map_details):
         
         self.source_txt,\
             self.dest_text = self.get_source_dest(map_details)
 
-        self.max_source = max_source
-        self.map_dict = self.create_map(map_details) #key=source: val=destination
+        self.range_list = self.create_range_list(map_details)
         
 
-    def get_source_dest(self,details):
+    def get_source_dest(self,details): #text
         hyphenated = details[0]
         hyphenated = hyphenated.split(" ")
         source = hyphenated[0].split("-")[0]
@@ -36,46 +31,37 @@ class Map:
         return source, dest
 
 
-    def create_map(self, details):
-        map_dict = {}
-        ranges = details[1:]
-        max_source = 0
+    def create_range_list(self, details):
+        buf = []
 
-        for details in ranges:
-            range_details = details.strip().split(" ")
-            source_start = int(range_details[1])
-            destination_start = int(range_details[0])
-            range_size = int(range_details[2])
+        for item in details[1:]:
+            num = item.split()
+            num = [int(x) for x in num]
+            buf.append(num)
 
-            source_range = [*range(source_start, source_start+range_size)]
-            destination_range = [*range(destination_start, destination_start+range_size)]
-
-            for i, source in enumerate(source_range):
-                map_dict[source] = destination_range[i]
-
-                if source > self.max_source:
-                    self.max_source = source
-
-        #map_dict_sorted = dict(sorted(map_dict.items()))
-
-        #fill in the gaps:
-        # for j in range(0, self.max_source):
-        #     if j in map_dict.keys():
-        #         pass
-        #     else:
-        #         map_dict[j] = j
-
-        return map_dict
-
+        return buf
 
     def follow(self, source):
-        if source in self.map_dict.keys():
-            return self.map_dict[source]
-        else:
-            return source
+        dest = None
+
+        for rang in self.range_list: #range cos range is keyword
+            source_range_start = rang[1]
+            range_len = rang[2]
+            dest_range_start = rang[0]
+
+            if source >= source_range_start and source <= source_range_start+range_len:
+                diff_src = source - source_range_start
+                dest = dest_range_start + diff_src
+            else:
+                continue
+        
+        if dest == None:
+            dest = source
+        
+        return dest
 
     def __repr__(self):
-        str = "Map {} to {} ".format(self.source_txt, self.dest_text)
+        str = "Map: {} to {} ".format(self.source_txt, self.dest_text)
         return(str)
 
     def __str__(self):
@@ -146,16 +132,13 @@ def main():
 
     #parse input and create maps
     map_list = []
-    seed_list = []
-    main_max_source = 0
+    seed_obj_list = []
 
     for i, map in enumerate(maps_input):
-        new_map = Map(map, main_max_source)
+        new_map = Map(map)
         map_list.append(new_map)
-        
-        if new_map.max_source > main_max_source:
-            #print("New bigger value of source")
-            main_max_source = new_map.max_source
+
+
 
     #parse input and create seeds
     seed_numbers = seeds_input[0]
@@ -163,11 +146,11 @@ def main():
     seeds_list = seed_numbers.split()
 
     for i, seed in enumerate(seeds_list):
-        seed_list.append(Seed(int(seed), map_list))
+        seed_obj_list.append(Seed(int(seed), map_list))
 
     smallest_loc = 0
     closest_seed = None
-    for i, seed in enumerate(seed_list):
+    for i, seed in enumerate(seed_obj_list):
         if i == 0:
             smallest_loc = seed.loc
             closest_seed = seed
@@ -178,6 +161,7 @@ def main():
     
     print(closest_seed)
     print(smallest_loc)
+    print("done")
         
         
     

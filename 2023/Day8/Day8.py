@@ -53,7 +53,7 @@ def main():
     nodes = raw_input[2:-1]
 
     #generate a map
-    map = parse_into_dict(nodes)
+    point_map = parse_into_dict(nodes)
 
 
     #traverse map
@@ -73,10 +73,10 @@ def main():
                 break
 
             if current_dirn == "L":
-                next_point = map.get(current_point)[L]
+                next_point = point_map.get(current_point)[L]
 
             elif current_dirn == "R":
-                next_point = map.get(current_point)[R]
+                next_point = point_map.get(current_point)[R]
 
             
             current_point = next_point

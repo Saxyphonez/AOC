@@ -59,6 +59,29 @@ class Map:
             dest = source
         
         return dest
+    
+    def back_follow(self, dest):
+        source = None
+        range_list_ordered = sorted(key=self.get_source)
+
+        for rang in range_list_ordered:
+            source_range_start = rang[1]
+            range_len = rang[2]
+            dest_range_start = rang[0]
+
+            if dest >= dest_range_start and dest <= dest_range_start+range_len:
+                diff_dest = dest - dest_range_start
+                source = source_range_start + diff_dest
+            else:
+                continue
+        if source == None:
+            source = dest
+
+        return source
+
+
+    def get_source(self, lst):
+        return sorted(lst[1])
 
     def __repr__(self):
         str = "Map: {} to {} ".format(self.source_txt, self.dest_text)
@@ -79,7 +102,6 @@ class Seed:
         # self.soil = None
         # self.fert = None
         # self.water = None
-
         # self.light = None
         # self.temp = None
         # self.humid = None
@@ -125,10 +147,14 @@ def get_input():
 
     return output
 
+def chunkwise(t, size=2):
+    it = iter(t)
+    return list(zip(*[it]*size))
+
 def main():
     raw_input = get_input()
     seeds_input = raw_input[0]
-    maps_input = raw_input[1:]
+    maps_input = raw_input[1:-1]
 
     #parse input and create maps
     map_list = []
@@ -138,29 +164,14 @@ def main():
         new_map = Map(map)
         map_list.append(new_map)
 
-
-
     #parse input and create seeds
     seed_numbers = seeds_input[0]
     seed_numbers = seed_numbers.split(":")[1]
-    seeds_list = seed_numbers.split()
+    seeds_range = seed_numbers.split()
+    seeds_range = chunkwise(seeds_range, size = 2)
 
-    for i, seed in enumerate(seeds_list):
-        seed_obj_list.append(Seed(int(seed), map_list))
-
-    smallest_loc = 0
-    closest_seed = None
-    for i, seed in enumerate(seed_obj_list):
-        if i == 0:
-            smallest_loc = seed.loc
-            closest_seed = seed
-        else:
-            if seed.loc < smallest_loc:
-                smallest_loc = seed.loc
-                closest_seed = seed
     
-    print(closest_seed)
-    print(smallest_loc)
+
     print("done")
         
         

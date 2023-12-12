@@ -7,7 +7,7 @@ try:
 except:
     print("Imports failed")
 
-TEST = True
+TEST = not True
 
 if TEST:
     input_filename = "test_input.txt"
@@ -75,24 +75,38 @@ def dist_getter(galaxies):
 
     return all_dist
 
-def add_repeats(board, blank_cols, blank_rows):
-    buf = board.copy()
-    blank_cols.reverse()
-    blank_rows.reverse()
 
-    for blank_col in blank_cols:
+def galaxy_adjuster(galaxies, blank_rows, blank_cols):
+    galaxies_list = galaxies.copy()
+    #big list of galaxies
+    # go through each
+    # For gal.col, see how many blank rows exist <gal.col
+    #add that many to gal.col
+    #repeat for gal.row
 
-        for line in buf:
-            line.insert(blank_col+1, ".")
+    for galaxy in galaxies_list:
+        col_orig = galaxy.col
+        row_orig = galaxy.row
 
-    blank_row_txt = ["."]*len(buf[0])
+        row_adjust = 0
+        col_adjust = 0
 
-    for blank_row in blank_rows:
-        buf.insert(blank_row, blank_row_txt)
+        for blank_row in blank_rows:
+            if blank_row < row_orig:
+                row_adjust += 1
+            else:
+                continue
 
-    
-    return buf
+        for blank_col in blank_cols:
+            if blank_col < col_orig:
+                col_adjust += 1
+            else:
+                continue
+        
+        galaxy.col += col_adjust
+        galaxy.row += row_adjust
 
+    return galaxies_list
 
 def main():
     raw_input = get_input()
@@ -124,11 +138,13 @@ def main():
         if dot_count == len(board):
             blank_cols.append(i)
 
-    big_board = add_repeats(board, blank_cols, blank_rows)
+    #big_board = add_repeats(board, blank_cols, blank_rows)
 
-    galaxies = galaxy_parse(big_board)
+    galaxies = galaxy_parse(raw_input)
 
-    list_of_distances = dist_getter(galaxies)
+    galaxies_adjusted = galaxy_adjuster(galaxies, blank_rows, blank_cols)
+
+    list_of_distances = dist_getter(galaxies_adjusted)
 
     total = 0
     for pairs in list_of_distances:

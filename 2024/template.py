@@ -31,7 +31,7 @@ def get_input():
 def main():
 
     print("Test is {}".format(TEST))
-    #get_input()
+    input = get_input()
 
     print("Done!")
 

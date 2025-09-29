@@ -4,12 +4,13 @@ try:
     import sys
 
     # import re
+    from customTypes import *
 
 except ModuleNotFoundError or ImportError as e:
     print("Imports failed")
     print(e)
 
-TEST = True
+TEST = not True
 
 if TEST:
     input_filename = "test_input.txt"
@@ -28,6 +29,7 @@ def get_input():
     input = [line.strip() for line in input]
     return input
 
+
 def main():
 
     print("Test is {}".format(TEST))
@@ -36,25 +38,35 @@ def main():
     input = [int(x) for x in input]
     
 
-    drive = []
+    drive = Drive()
+    drive_vis = []
     file_id_count = 0
 
     for i, val in enumerate(input):
+        head = len(drive_vis)
+        tail = head + val -1
+
         if (i%2): #if odd
-            drive.extend("."*val)
+            drive_vis.extend("."*val)
+
+            drive.addFile(File(size = val, head = head, tail = tail))
 
         else: #if even
-            drive.extend([file_id_count]*val)
+            drive_vis.extend([file_id_count]*val)
+            drive.addFile(File(id=file_id_count, size = val, type = FileType.REALFILE,
+                              head = head, tail = tail))
+            
             file_id_count +=1
 
 
-    defragged = defragment(input=input, drive=drive)
+    #pretty_print(drive.files[-1])
+    print(drive.files[-1])
+    #pretty_print(drive_vis)
+    # pretty_print(defragged)
 
-    pretty_print(drive)
-    pretty_print(defragged)
+    operation(drive=drive)
 
-
-    print(checksum(defragged))
+    # print(checksum(defragged))
 
     print("Done!")
 
@@ -72,36 +84,15 @@ def checksum(defrag):
     return checksum
 
 
-def defragment(input, drive):
-    drive_local = drive.copy() # 
+def operation(drive):
 
-    total_free_spaces = 0
-    for i,val in enumerate(input):
-        if (i%2):
-            total_free_spaces += val
-        else:
-            continue
+    memoryMap = drive.addressTable.copy()
 
-    ptr_next_free_space = input[0] #where is the next place to put a part of a file
-    ptr_next_data_to_move = len(drive_local)-1
-
-    end_condition = list("."*total_free_spaces)
-
-    while drive_local[(-1*total_free_spaces):] != end_condition:
-        data, space = drive_local[ptr_next_data_to_move], drive_local[ptr_next_free_space]
-
-        drive_local[ptr_next_free_space] = data
-        drive_local[ptr_next_data_to_move] = space
-
-        while drive_local[ptr_next_free_space] != ".":
-            ptr_next_free_space +=1
-
-        while drive_local[ptr_next_data_to_move] == ".":
-            ptr_next_data_to_move -=1
+    #iterate over the memory
 
 
+    pass
 
-    return drive_local
 
 def pretty_print(lis):
 

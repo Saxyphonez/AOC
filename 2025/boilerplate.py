@@ -8,7 +8,7 @@ try:
 except:
     print("Imports failed")
 
-YEAR = 2024
+YEAR = 2025
 DAY = "Day"
 TEST_INPUT = "test_input.txt"
 INPUT = "input.txt"
